@@ -312,10 +312,16 @@ class UsersPublic(SQLModel):
 class ItemBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=255)
+    
+class BookingBase(SQLModel):
+    pass
 
 
 # Properties to receive on item creation
 class ItemCreate(ItemBase):
+    pass
+
+class BookingCreate(BookingBase):
     pass
 
 
@@ -338,10 +344,17 @@ class Item(ItemBase, table=True):
 class ItemPublic(ItemBase):
     user_id: uuid.UUID
     owner_id: uuid.UUID
+    
+class BookingPublic(BookingBase):
+    booking_id: uuid.UUID
 
 
 class ItemsPublic(SQLModel):
     data: list[ItemPublic]
+    count: int
+    
+class BookingsPublic(SQLModel):
+    data: list[BookingPublic]
     count: int
 
 
@@ -408,7 +421,7 @@ class Payment(SQLModel, table=True):
     
 class Booking(SQLModel, table=True):
     booking_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.user_id")
+    owner_id: uuid.UUID = Field(foreign_key="user.user_id")
     driver_id: uuid.UUID = Field(foreign_key="driver.driver_id")
     pickup_location_id: uuid.UUID = Field(foreign_key="location.location_id")
     dropoff_location_id: uuid.UUID = Field(foreign_key="location.location_id")
