@@ -18,7 +18,9 @@ import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
+import { Route as LayoutPickLocationImport } from './routes/_layout/pick-location'
 import { Route as LayoutItemsImport } from './routes/_layout/items'
+import { Route as LayoutFleetImport } from './routes/_layout/fleet'
 import { Route as LayoutAdminImport } from './routes/_layout/admin'
 
 // Create/Update Routes
@@ -58,8 +60,18 @@ const LayoutSettingsRoute = LayoutSettingsImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutPickLocationRoute = LayoutPickLocationImport.update({
+  path: '/pick-location',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutItemsRoute = LayoutItemsImport.update({
   path: '/items',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutFleetRoute = LayoutFleetImport.update({
+  path: '/fleet',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -96,8 +108,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/fleet': {
+      preLoaderRoute: typeof LayoutFleetImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/items': {
       preLoaderRoute: typeof LayoutItemsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/pick-location': {
+      preLoaderRoute: typeof LayoutPickLocationImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/settings': {
@@ -116,7 +136,9 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   LayoutRoute.addChildren([
     LayoutAdminRoute,
+    LayoutFleetRoute,
     LayoutItemsRoute,
+    LayoutPickLocationRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,
   ]),

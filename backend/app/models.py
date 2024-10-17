@@ -267,6 +267,10 @@ class UserBase(SQLModel):
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
 
+class DriverCreate(UserBase):
+    password: str = Field(min_length=8, max_length=40)
+    license_number: str = Field(max_length=50)
+    vehicle_type_id: uuid.UUID
 
 class UserRegister(SQLModel):
     email: EmailStr = Field(max_length=255)

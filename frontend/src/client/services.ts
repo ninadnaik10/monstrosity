@@ -19,6 +19,7 @@ import type {
   ItemsPublic,
   ItemUpdate,
 } from "./models"
+import { Place, SearchResponse } from "./types"
 
 export type TDataLoginAccessToken = {
   formData: Body_login_login_access_token
@@ -525,5 +526,26 @@ export class ItemsService {
         422: `Validation Error`,
       },
     })
+  }
+}
+
+export class MapService {
+  public search = async (term: string) => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${term}&format=geojson&addressdetails=1&layer=address&limit=5`
+    );
+    const data: SearchResponse = await res.json();
+
+
+    const places: Place[] = data.features.map((feature) => {
+      return {
+        id: feature.properties.place_id,
+        name: feature.properties.display_name,
+        longitude: feature.geometry.coordinates[0],
+        latitude: feature.geometry.coordinates[1]
+      }
+    });
+
+    return places;
   }
 }
