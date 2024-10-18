@@ -549,3 +549,15 @@ export class MapService {
     return places;
   }
 }
+
+export class VehicleService {
+  public static getVehiclesPriceEstimates = async (distance: number) => {
+    return __request(OpenAPI, {
+
+      method: "POST",
+      body: { distance, unit: "km" },
+      url: "/api/v1/vehicles/price-estimates",
+    })
+
+  }
+}

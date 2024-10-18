@@ -13,9 +13,10 @@ import {
   Button,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import useAuth from "../../hooks/useAuth";
+import { RecoilRoot } from "recoil";
 
 export const Route = createFileRoute("/_layout/")({
   component: Dashboard,
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_layout/")({
 
 function Dashboard() {
   const { user: currentUser } = useAuth();
-
+  const navigate = useNavigate({ from: "/" });
   return (
     <>
       <Container maxW="full">
@@ -49,7 +50,11 @@ function Dashboard() {
           </CardBody>
           <CardFooter>
             <ButtonGroup>
-              <Button variant="solid" colorScheme="blue">
+              <Button
+                variant="solid"
+                colorScheme="blue"
+                onClick={() => navigate({ to: "/pick-location" })}
+              >
                 Book now
               </Button>
             </ButtonGroup>

@@ -382,14 +382,22 @@ class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=40)
     
-    
-class VehicleType(SQLModel, table=True):
+class VehicleBase(SQLModel):
     vehicle_type_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=50)
     description: str = Field(max_length=255)
     base_price: Decimal = Field(max_digits=10, decimal_places=2)
     price_per_km: Decimal = Field(max_digits=10, decimal_places=2)
     capacity: int
+    
+    
+class VehicleType(VehicleBase, table=True):
+    # vehicle_type_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    # name: str = Field(max_length=50)
+    # description: str = Field(max_length=255)
+    # base_price: Decimal = Field(max_digits=10, decimal_places=2)
+    # price_per_km: Decimal = Field(max_digits=10, decimal_places=2)
+    # capacity: int
     drivers: list["Driver"] = Relationship(back_populates="vehicle_type")
     
 class Driver(UserBase, table=True):
@@ -445,4 +453,18 @@ class Booking(SQLModel, table=True):
     driver: Driver = Relationship(back_populates="bookings")
     pickup_location: "Location" = Relationship(back_populates="pickup_bookings", sa_relationship_kwargs={'foreign_keys': '[Booking.pickup_location_id]'})
     dropoff_location: "Location" = Relationship(back_populates="dropoff_bookings", sa_relationship_kwargs={'foreign_keys': '[Booking.dropoff_location_id]'})    # tracking: Tracking = Relationship(back_populates="booking") # time series data
-    payment: Optional["Payment"] = Relationship(back_populates="booking")    
+    payment: Optional["Payment"] = Relationship(back_populates="booking")  
+    
+
+    
+    
+class OneVehiclePriceEstimate(VehicleBase):  
+    estimated_price: Decimal
+
+
+class VehiclePriceEstimates(SQLModel):
+    vehicles: list[OneVehiclePriceEstimate]
+    
+class DistanceIn(SQLModel):
+    distance: Decimal
+    unit: str

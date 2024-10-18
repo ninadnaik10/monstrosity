@@ -14,11 +14,19 @@ export default function Map({ fromPlace, toPlace }: MapProps) {
   const mapRef = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
+    if (mapRef.current && fromPlace) {
+      console.log(mapRef);
+      mapRef.current.flyTo([fromPlace.latitude, fromPlace.longitude], 14);
+    }
+  }, [fromPlace]);
+
+  useEffect(() => {
     if (mapRef.current && fromPlace && toPlace) {
       const bounds: LatLngTuple[] = [
         [fromPlace.latitude, fromPlace.longitude],
         [toPlace.latitude, toPlace.longitude],
       ];
+      mapRef.current.flyTo([toPlace.latitude, toPlace.longitude], 14);
       mapRef.current.fitBounds(bounds);
     }
   }, [fromPlace, toPlace]);
@@ -35,7 +43,7 @@ export default function Map({ fromPlace, toPlace }: MapProps) {
     <Box height="100%" width="100%">
       <MapContainer
         ref={mapRef}
-        center={[47.38, 8.527] as LatLngTuple}
+        center={[19.076, 72.8777] as LatLngTuple}
         zoom={12}
         scrollWheelZoom
         style={{ height: "100%", width: "100%" }}
