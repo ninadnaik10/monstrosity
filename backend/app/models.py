@@ -434,14 +434,16 @@ class Payment(SQLModel, table=True):
 class Booking(SQLModel, table=True):
     booking_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     owner_id: uuid.UUID = Field(foreign_key="user.user_id")
-    driver_id: uuid.UUID = Field(foreign_key="driver.driver_id")
+    driver_id: Optional[uuid.UUID] = Field(foreign_key="driver.driver_id")
     pickup_location_id: uuid.UUID = Field(foreign_key="location.location_id")
     dropoff_location_id: uuid.UUID = Field(foreign_key="location.location_id")
-    booking_time: datetime.datetime
-    pickup_time: datetime.datetime
-    dropoff_time: datetime.datetime
+    booking_time: datetime.datetime = Field(
+        default_factory=datetime.datetime.utcnow,
+    )
+    pickup_time: Optional[datetime.datetime]
+    dropoff_time: Optional[datetime.datetime]
     estimated_price: Decimal = Field(sa_column=Column(Numeric(10, 2)))
-    final_price: Decimal = Field(sa_column=Column(Numeric(10, 2)))
+    final_price: Optional[Decimal] = Field(sa_column=Column(Numeric(10, 2)))
     status: str = Field(max_length=20)
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.utcnow,
@@ -468,3 +470,11 @@ class VehiclePriceEstimates(SQLModel):
 class DistanceIn(SQLModel):
     distance: Decimal
     unit: str
+    
+    
+class BookingCreate(BookingBase):
+    pickup_latitude: str
+    pickup_longitude: str
+    dropoff_latitude: str
+    dropoff_longitude: str
+    estimated_price: Decimal

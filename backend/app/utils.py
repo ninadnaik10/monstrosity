@@ -1,8 +1,11 @@
+from http.client import HTTPException
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+import httpx
 
 import emails  # type: ignore
 import jwt
@@ -115,3 +118,21 @@ def verify_password_reset_token(token: str) -> str | None:
         return str(decoded_token["sub"])
     except InvalidTokenError:
         return None
+
+
+async def get_location_details(latitude: float, longitude: float, api_key: str):
+    url = f"https://api.geoapify.com/v1/geocode/reverse?lat={latitude}&lon={longitude}&apiKey={api_key}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            if data["features"]:
+                properties = data["features"][0]["properties"]
+                return {
+                    "address": properties.get("formatted"),
+                    "city": properties.get("city"),
+                    "state": properties.get("state"),
+                    "country": properties.get("country"),
+                    "postal_code": properties.get("postcode"),
+                }
+        raise HTTPException(status_code=400, detail="Failed to get location details")

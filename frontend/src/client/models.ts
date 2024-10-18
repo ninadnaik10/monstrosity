@@ -97,3 +97,12 @@ export type ValidationError = {
   msg: string
   type: string
 }
+
+
+export type BookingCreate = {
+  pickup_latitude: string,
+  pickup_longitude: string,
+  dropoff_latitude: string,
+  dropoff_longitude: string,
+  estimated_price: string,
+}
