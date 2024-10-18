@@ -11,27 +11,27 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
-} from "@chakra-ui/react"
-import { useQueryClient } from "@tanstack/react-query"
-import { FiLogOut, FiMenu } from "react-icons/fi"
+} from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { FiLogOut, FiMenu } from "react-icons/fi";
 
-import Logo from "/assets/images/fastapi-logo.svg"
-import type { UserPublic } from "../../client"
-import useAuth from "../../hooks/useAuth"
-import SidebarItems from "./SidebarItems"
+import Logo from "/assets/images/fastapi-logo.svg";
+import type { UserPublic } from "../../client";
+import useAuth from "../../hooks/useAuth";
+import SidebarItems from "./SidebarItems";
 
 const Sidebar = () => {
-  const queryClient = useQueryClient()
-  const bgColor = useColorModeValue("ui.light", "ui.dark")
-  const textColor = useColorModeValue("ui.dark", "ui.light")
-  const secBgColor = useColorModeValue("ui.secondary", "ui.darkSlate")
-  const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"])
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const { logout } = useAuth()
+  const queryClient = useQueryClient();
+  const bgColor = useColorModeValue("ui.light", "ui.dark");
+  const textColor = useColorModeValue("ui.dark", "ui.light");
+  const secBgColor = useColorModeValue("ui.secondary", "ui.darkSlate");
+  const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
-    logout()
-  }
+    logout();
+  };
 
   return (
     <>
@@ -52,7 +52,7 @@ const Sidebar = () => {
           <DrawerBody py={8}>
             <Flex flexDir="column" justify="space-between">
               <Box>
-                <Image src={Logo} alt="logo" p={6} />
+                {/* <Image src={Logo} alt="logo" p={6} /> */}
                 <SidebarItems onClose={onClose} />
                 <Flex
                   as="button"
@@ -93,7 +93,7 @@ const Sidebar = () => {
           borderRadius={12}
         >
           <Box>
-            <Image src={Logo} alt="Logo" w="180px" maxW="2xs" p={6} />
+            {/* <Image src={Logo} alt="Logo" w="180px" maxW="2xs" p={6} /> */}
             <SidebarItems />
           </Box>
           {currentUser?.email && (
@@ -110,7 +110,7 @@ const Sidebar = () => {
         </Flex>
       </Box>
     </>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

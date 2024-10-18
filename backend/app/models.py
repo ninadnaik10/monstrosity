@@ -349,17 +349,14 @@ class ItemPublic(ItemBase):
     user_id: uuid.UUID
     owner_id: uuid.UUID
     
-class BookingPublic(BookingBase):
-    booking_id: uuid.UUID
+
 
 
 class ItemsPublic(SQLModel):
     data: list[ItemPublic]
     count: int
     
-class BookingsPublic(SQLModel):
-    data: list[BookingPublic]
-    count: int
+
 
 
 # Generic message
@@ -473,8 +470,19 @@ class DistanceIn(SQLModel):
     
     
 class BookingCreate(BookingBase):
-    pickup_latitude: str
-    pickup_longitude: str
-    dropoff_latitude: str
-    dropoff_longitude: str
+    pickup_latitude: Decimal
+    pickup_longitude: Decimal
+    dropoff_latitude: Decimal
+    dropoff_longitude: Decimal
     estimated_price: Decimal
+    
+    
+class BookingPublic(BookingBase):
+    booking_id: uuid.UUID
+    pickup_address: str
+    dropoff_address: str
+    estimated_price: Decimal
+    
+class BookingsPublic(SQLModel):
+    data: list[BookingPublic]
+    count: int

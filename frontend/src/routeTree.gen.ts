@@ -19,8 +19,10 @@ import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutPickLocationImport } from './routes/_layout/pick-location'
+import { Route as LayoutMyBookingsImport } from './routes/_layout/my-bookings'
 import { Route as LayoutItemsImport } from './routes/_layout/items'
 import { Route as LayoutFleetImport } from './routes/_layout/fleet'
+import { Route as LayoutDriverDashboardImport } from './routes/_layout/driver-dashboard'
 import { Route as LayoutAdminImport } from './routes/_layout/admin'
 
 // Create/Update Routes
@@ -65,6 +67,11 @@ const LayoutPickLocationRoute = LayoutPickLocationImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutMyBookingsRoute = LayoutMyBookingsImport.update({
+  path: '/my-bookings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutItemsRoute = LayoutItemsImport.update({
   path: '/items',
   getParentRoute: () => LayoutRoute,
@@ -72,6 +79,11 @@ const LayoutItemsRoute = LayoutItemsImport.update({
 
 const LayoutFleetRoute = LayoutFleetImport.update({
   path: '/fleet',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutDriverDashboardRoute = LayoutDriverDashboardImport.update({
+  path: '/driver-dashboard',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -108,12 +120,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/driver-dashboard': {
+      preLoaderRoute: typeof LayoutDriverDashboardImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/fleet': {
       preLoaderRoute: typeof LayoutFleetImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/items': {
       preLoaderRoute: typeof LayoutItemsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/my-bookings': {
+      preLoaderRoute: typeof LayoutMyBookingsImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/pick-location': {
@@ -136,8 +156,10 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   LayoutRoute.addChildren([
     LayoutAdminRoute,
+    LayoutDriverDashboardRoute,
     LayoutFleetRoute,
     LayoutItemsRoute,
+    LayoutMyBookingsRoute,
     LayoutPickLocationRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,

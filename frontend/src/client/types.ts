@@ -18,3 +18,11 @@ export interface SearchResponse {
     }[]
 }
 
+// export interface BookingCreate {
+//     pickup_latitude: string;
+//     pickup_longitude: string;
+//     dropoff_latitude: string;
+//     dropoff_longitude: string;
+//     estimate_price: number;
+//     distance: number;
+// }

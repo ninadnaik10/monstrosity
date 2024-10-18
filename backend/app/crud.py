@@ -4,7 +4,7 @@ from typing import Any
 from sqlmodel import Session, select
 
 from app.core.security import get_password_hash, verify_password
-from app.models import Item, ItemCreate, User, UserCreate, UserUpdate
+from app.models import Driver, Item, ItemCreate, User, UserCreate, UserUpdate
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -31,14 +31,18 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
     return db_user
 
 
-def get_user_by_email(*, session: Session, email: str) -> User | None:
-    statement = select(User).where(User.email == email)
+def get_user_by_email(*, session: Session, email: str, loginType:str) -> User | None:
+    if loginType == 'user':
+        statement = select(User).where(User.email == email)
+    else:
+        statement = select(Driver).where(Driver.email == email)
     session_user = session.exec(statement).first()
     return session_user
 
 
-def authenticate(*, session: Session, email: str, password: str) -> User | None:
-    db_user = get_user_by_email(session=session, email=email)
+def authenticate(*, session: Session, email: str, password: str, loginType: str) -> User | None:
+    
+    db_user = get_user_by_email(session=session, email=email, loginType=loginType)
     if not db_user:
         return None
     if not verify_password(password, db_user.hashed_password):

@@ -18,6 +18,7 @@ import type {
   ItemPublic,
   ItemsPublic,
   ItemUpdate,
+  BookingCreate,
 } from "./models"
 import { Place, SearchResponse } from "./types"
 
@@ -559,5 +560,83 @@ export class VehicleService {
       url: "/api/v1/vehicles/price-estimates",
     })
 
+  }
+}
+
+export class BookingService {
+  public static postBooking = async (data: BookingCreate) => {
+    console.log(data)
+    return __request(OpenAPI, {
+
+      method: "POST",
+      body: data,
+      url: "/api/v1/bookings/",
+    })
+
+  }
+
+  public static readItems(
+    data: TDataReadItems = {},
+  ): CancelablePromise<ItemsPublic> {
+    const { limit = 100, skip = 0 } = data
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/v1/bookings/",
+      query: {
+        skip,
+        limit,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    })
+  }
+
+  public static readMyItems(
+    data: TDataReadItems = {},
+  ): CancelablePromise<ItemsPublic> {
+    const { limit = 100, skip = 0 } = data
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/api/v1/bookings/my/",
+      query: {
+        skip,
+        limit,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    })
+  }
+
+}
+
+export class LocationService {
+  public static getDistance = async (data: any) => {
+    const distance = __request(OpenAPI, {
+
+      method: "POST",
+      body: data,
+      url: "/api/v1/utils/get-distance/",
+    })
+    return distance
+  }
+}
+
+
+export class DriversService {
+  public static loginAccessToken(
+    data: TDataLoginAccessToken,
+  ): CancelablePromise<Token> {
+    const { formData } = data
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/v1/login/access-token/driver/",
+      formData: formData,
+      mediaType: "application/x-www-form-urlencoded",
+      errors: {
+        422: `Validation Error`,
+      },
+    })
   }
 }

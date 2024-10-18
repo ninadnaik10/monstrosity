@@ -54,16 +54,16 @@ def read_items(
 
     return VehiclePriceEstimates(vehicles=estimated_vehicles)
     
-    for vehicleType in vehicleTypes:
-        vehicleObj = VehicleType.model_validate(vehicleType)
-        print(vehicleObj)
-        vehicleType.price_estimate = vehicleType.price_per_km * distance_in.distance
-        print(vehicleType.price_estimate)
+    # for vehicleType in vehicleTypes:
+    #     vehicleObj = VehicleType.model_validate(vehicleType)
+    #     print(vehicleObj)
+    #     vehicleType.price_estimate = vehicleType.price_per_km * distance_in.distance
+    #     print(vehicleType.price_estimate)
             
-    list_of_vehicle_types = [vehicleType for vehicleType in vehicleTypes]
-    print(list_of_vehicle_types)
+    # list_of_vehicle_types = [vehicleType for vehicleType in vehicleTypes]
+    # print(list_of_vehicle_types)
 
-    return list_of_vehicle_types
+    # return list_of_vehicle_types
 
 
 # @router.get("/{id}", response_model=BookingPublic)

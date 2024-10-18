@@ -6,6 +6,7 @@ import { AxiosError } from "axios"
 import {
   type Body_login_login_access_token as AccessToken,
   type ApiError,
+  DriversService,
   LoginService,
   type UserPublic,
   type UserRegister,
@@ -15,6 +16,9 @@ import useCustomToast from "./useCustomToast"
 
 const isLoggedIn = () => {
   return localStorage.getItem("access_token") !== null
+}
+const isDriver = () => {
+  return localStorage.getItem("user_type") === "driver"
 }
 
 const useAuth = () => {
@@ -55,9 +59,22 @@ const useAuth = () => {
   })
 
   const login = async (data: AccessToken) => {
-    const response = await LoginService.loginAccessToken({
-      formData: data,
-    })
+    let response;
+    console.log(data)
+    if (data.userType === "user") {
+
+      response = await LoginService.loginAccessToken({
+        formData: data,
+      })
+      localStorage.setItem("user_type", "user")
+    }
+    else {
+      response = await DriversService.loginAccessToken({
+        formData: data,
+      })
+      localStorage.setItem("user_type", "driver")
+
+    }
     localStorage.setItem("access_token", response.access_token)
   }
 
@@ -81,6 +98,27 @@ const useAuth = () => {
     },
   })
 
+  // const loginMutation = useMutation({
+  //   mutationFn: async ({ username, password, userType }: { username: string; password: string; userType: 'user' | 'driver' }) => {
+  //     const service = userType === 'user' ? UsersService : DriversService;
+  //     return await service.loginAccessToken({ username, password });
+  //   },
+  //   onSuccess: (data) => {
+  //     localStorage.setItem('token', data.access_token);
+  //     queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+  //     navigate({ to: "/" });
+  //     showToast("Logged in successfully", "Welcome back!", "success");
+  //   },
+  //   onError: (err: ApiError) => {
+  //     let errDetail = (err.body as any)?.detail;
+  //     if (err instanceof AxiosError) {
+  //       errDetail = err.message;
+  //     }
+  //     setError(errDetail || "An error occurred during login");
+  //     showToast("Login failed", errDetail || "An error occurred during login", "error");
+  //   },
+  // });
+
   const logout = () => {
     localStorage.removeItem("access_token")
     navigate({ to: "/login" })
@@ -97,5 +135,5 @@ const useAuth = () => {
   }
 }
 
-export { isLoggedIn }
+export { isLoggedIn, isDriver }
 export default useAuth

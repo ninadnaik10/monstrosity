@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Place } from "../../client/types";
 import Map from "../../components/Common/Map";
 import SelectLocation from "../../components/Common/SelectLocation";
+import { bookingStateAtom } from "../../states/booking-state";
+import { useRecoilState } from "recoil";
 
 export const Route = createFileRoute("/_layout/pick-location")({
   component: PickUpLocation,
@@ -20,6 +22,23 @@ export const Route = createFileRoute("/_layout/pick-location")({
 export default function PickUpLocation() {
   const [fromPlace, setFromPlace] = useState<Place | null>(null);
   const [toPlace, setToPlace] = useState<Place | null>(null);
+  const [bookingState, setBookingState] = useRecoilState(bookingStateAtom);
+  useEffect(() => {
+    console.log(bookingState);
+    setBookingState({
+      ...bookingState,
+      pickup_latitude: fromPlace?.latitude || null,
+      pickup_longitude: fromPlace?.longitude || null,
+    });
+  }, [fromPlace, toPlace]);
+  useEffect(() => {
+    console.log(bookingState);
+    setBookingState({
+      ...bookingState,
+      dropoff_latitude: toPlace?.latitude || null,
+      dropoff_longitude: toPlace?.longitude || null,
+    });
+  }, [toPlace]);
   //   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) =>{
   //     event.preventDefault();
 

@@ -9,23 +9,27 @@ import {
   Heading,
   Text,
 } from "@chakra-ui/react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { VehicleService } from "../../client";
-import { useRecoilValue } from "recoil";
-import { bookingState } from "../../states/booking-state";
+import { BookingService, LocationService, VehicleService } from "../../client";
+import { BeatLoader } from "react-spinners";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { bookingStateAtom } from "../../states/booking-state";
+import { setTimeout } from "timers/promises";
 
 export const Route = createFileRoute("/_layout/fleet")({
   component: ChooseFleet,
 });
 
-function getItemsQueryOptions(distance: number | null) {
-  const queryKey = ["vehicles", distance]; // Always provide queryKey with at least 2 elements
+function getItemsQueryOptions(data: any) {
+  // @ts-ignore
+  const distance: number = LocationService.getDistance(data);
+  const queryKey = ["vehicles", distance];
   if (!distance) {
     return {
       queryFn: async (): Promise<VehiclePriceEstimates> => {
-        return { vehicles: [] }; // Return an empty list of vehicles when distance is null
+        return { vehicles: [] };
       },
       queryKey,
     };
@@ -46,7 +50,7 @@ export interface VehiclePriceEstimates {
     base_price: string;
     capacity: number;
     description: string;
-    estimated_price: string;
+    estimated_price: number;
     name: string;
     price_per_km: string;
     vehicle_type_id: string;
@@ -54,19 +58,38 @@ export interface VehiclePriceEstimates {
 }
 
 export default function ChooseFleet() {
-  const queryClient = useQueryClient();
-
-  const { distance } = useRecoilValue(bookingState);
   const [cardSelected, setCardSelected] = useState<number>();
   const handleSelectCard = (index: number) => {
     setCardSelected(index);
+    setBookingState({
+      ...bookingState,
+      vehicle_type_id: vehicles?.vehicles[index].vehicle_type_id || null,
+      estimated_price: vehicles?.vehicles[index].estimated_price || null,
+    });
+  };
+
+  const navigate = useNavigate({ from: "/_layout/fleet" });
+
+  const [bookingState, setBookingState] = useRecoilState(bookingStateAtom);
+  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const handleBookNowSubmit = async () => {
+    setIsSubmitLoading(true);
+
+    await BookingService.postBooking(bookingState);
+
+    setIsSubmitLoading(false);
+
+    navigate({ to: "/" });
   };
   const {
     data: vehicles,
     isLoading,
     isPlaceholderData,
   } = useQuery<VehiclePriceEstimates>({
-    ...getItemsQueryOptions(44), // Use the actual distance from state
+    ...getItemsQueryOptions({
+      from: [bookingState.pickup_latitude, bookingState.pickup_longitude],
+      to: [bookingState.dropoff_latitude, bookingState.dropoff_longitude],
+    }), // Use the actual distance from state
     placeholderData: (prevData: VehiclePriceEstimates | undefined) =>
       prevData || { vehicles: [] },
   });
@@ -106,6 +129,13 @@ export default function ChooseFleet() {
           </GridItem>
         ))}
       </Grid>
+      <Button
+        onClick={handleBookNowSubmit}
+        isLoading={isSubmitLoading}
+        spinner={<BeatLoader size={8} color="white" />}
+      >
+        Book Now
+      </Button>
     </div>
   );
 }

@@ -75,6 +75,11 @@ router = APIRouter()
 #     return user
 
 
+# @router.get("/me", response_model=UserPublic)
+# def read_user_me() -> Any:
+#     pass
+
+
 @router.patch("/me", response_model=UserPublic)
 def update_user_me(
     *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser

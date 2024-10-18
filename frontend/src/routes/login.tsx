@@ -1,4 +1,5 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
+import React, { useState } from "react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
   Container,
@@ -12,133 +13,157 @@ import {
   Link,
   Text,
   useBoolean,
-} from "@chakra-ui/react"
+  Radio,
+  RadioGroup,
+  Stack,
+} from "@chakra-ui/react";
 import {
   Link as RouterLink,
   createFileRoute,
   redirect,
-} from "@tanstack/react-router"
-import { type SubmitHandler, useForm } from "react-hook-form"
+} from "@tanstack/react-router";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
-import Logo from "/assets/images/fastapi-logo.svg"
-import type { Body_login_login_access_token as AccessToken } from "../client"
-import useAuth, { isLoggedIn } from "../hooks/useAuth"
-import { emailPattern } from "../utils"
+import Logo from "/assets/images/fastapi-logo.svg";
+import type { Body_login_login_access_token as AccessToken } from "../client";
+import useAuth, { isLoggedIn, isDriver } from "../hooks/useAuth";
+import { emailPattern } from "../utils";
 
 export const Route = createFileRoute("/login")({
   component: Login,
   beforeLoad: async () => {
     if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
+      if (isDriver()) {
+        throw redirect({
+          to: "/driver-dashboard/",
+        });
+      } else {
+        throw redirect({
+          to: "/",
+        });
+      }
     }
   },
-})
+});
 
 function Login() {
-  const [show, setShow] = useBoolean()
-  const { loginMutation, error, resetError } = useAuth()
+  const [show, setShow] = useBoolean();
+  const { loginMutation, error, resetError } = useAuth();
+  const [userType, setUserType] = useState("user");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue, // Added setValue
   } = useForm<AccessToken>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
       username: "",
       password: "",
+      userType: userType, // This will still set the initial default value
     },
-  })
+  });
+
+  // Update userType in the form state when the radio button changes
+  const handleUserTypeChange = (value: string) => {
+    setUserType(value);
+    setValue("userType", value); // Manually update the userType in the form
+  };
 
   const onSubmit: SubmitHandler<AccessToken> = async (data) => {
-    if (isSubmitting) return
+    if (isSubmitting) return;
 
-    resetError()
+    resetError();
 
     try {
-      await loginMutation.mutateAsync(data)
+      await loginMutation.mutateAsync({ ...data });
     } catch {
       // error is handled by useAuth hook
     }
-  }
+  };
 
   return (
-    <>
-      <Container
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        h="100vh"
-        maxW="sm"
-        alignItems="stretch"
-        justifyContent="center"
-        gap={4}
-        centerContent
-      >
-        <Image
-          src={Logo}
-          alt="FastAPI logo"
-          height="auto"
-          maxW="2xs"
-          alignSelf="center"
-          mb={4}
+    <Container
+      as="form"
+      onSubmit={handleSubmit(onSubmit)}
+      h="100vh"
+      maxW="sm"
+      alignItems="stretch"
+      justifyContent="center"
+      gap={4}
+      centerContent
+    >
+      {/* <Image
+        src={Logo}
+        alt="FastAPI logo"
+        height="auto"
+        maxW="2xs"
+        alignSelf="center"
+        mb={4}
+      /> */}
+      <RadioGroup onChange={handleUserTypeChange} value={userType}>
+        <Stack direction="row">
+          <Radio value="user">User</Radio>
+          <Radio value="driver">Driver</Radio>
+        </Stack>
+      </RadioGroup>
+      <FormControl id="username" isInvalid={!!errors.username || !!error}>
+        <Input
+          id="username"
+          {...register("username", {
+            required: "Username is required",
+            pattern: emailPattern,
+          })}
+          placeholder="Email"
+          type="email"
+          required
         />
-        <FormControl id="username" isInvalid={!!errors.username || !!error}>
+        {errors.username && (
+          <FormErrorMessage>{errors.username.message}</FormErrorMessage>
+        )}
+      </FormControl>
+      <FormControl id="password" isInvalid={!!error}>
+        <InputGroup>
           <Input
-            id="username"
-            {...register("username", {
-              required: "Username is required",
-              pattern: emailPattern,
+            {...register("password", {
+              required: "Password is required",
             })}
-            placeholder="Email"
-            type="email"
+            type={show ? "text" : "password"}
+            placeholder="Password"
             required
           />
-          {errors.username && (
-            <FormErrorMessage>{errors.username.message}</FormErrorMessage>
-          )}
-        </FormControl>
-        <FormControl id="password" isInvalid={!!error}>
-          <InputGroup>
-            <Input
-              {...register("password", {
-                required: "Password is required",
-              })}
-              type={show ? "text" : "password"}
-              placeholder="Password"
-              required
-            />
-            <InputRightElement
-              color="ui.dim"
-              _hover={{
-                cursor: "pointer",
-              }}
+          <InputRightElement
+            color="ui.dim"
+            _hover={{
+              cursor: "pointer",
+            }}
+          >
+            <Icon
+              as={show ? ViewOffIcon : ViewIcon}
+              onClick={setShow.toggle}
+              aria-label={show ? "Hide password" : "Show password"}
             >
-              <Icon
-                as={show ? ViewOffIcon : ViewIcon}
-                onClick={setShow.toggle}
-                aria-label={show ? "Hide password" : "Show password"}
-              >
-                {show ? <ViewOffIcon /> : <ViewIcon />}
-              </Icon>
-            </InputRightElement>
-          </InputGroup>
-          {error && <FormErrorMessage>{error}</FormErrorMessage>}
-        </FormControl>
-        <Link as={RouterLink} to="/recover-password" color="blue.500">
-          Forgot password?
+              {show ? <ViewOffIcon /> : <ViewIcon />}
+            </Icon>
+          </InputRightElement>
+        </InputGroup>
+        {error && <FormErrorMessage>{error}</FormErrorMessage>}
+      </FormControl>
+      <Link as={RouterLink} to="/recover-password" color="blue.500">
+        Forgot password?
+      </Link>
+      <Button variant="primary" type="submit" isLoading={isSubmitting}>
+        Log In
+      </Button>
+      <Text>
+        Don't have an account?{" "}
+        <Link as={RouterLink} to="/signup" color="blue.500">
+          Sign up
         </Link>
-        <Button variant="primary" type="submit" isLoading={isSubmitting}>
-          Log In
-        </Button>
-        <Text>
-          Don't have an account?{" "}
-          <Link as={RouterLink} to="/signup" color="blue.500">
-            Sign up
-          </Link>
-        </Text>
-      </Container>
-    </>
-  )
+      </Text>
+    </Container>
+  );
 }
+
+export default Login;

@@ -5,6 +5,7 @@ export type Body_login_login_access_token = {
   scope?: string
   client_id?: string | null
   client_secret?: string | null
+  userType: string
 }
 
 export type HTTPValidationError = {
@@ -100,9 +101,10 @@ export type ValidationError = {
 
 
 export type BookingCreate = {
-  pickup_latitude: string,
-  pickup_longitude: string,
-  dropoff_latitude: string,
-  dropoff_longitude: string,
-  estimated_price: string,
+  pickup_latitude: number | null,
+  pickup_longitude: number | null,
+  dropoff_latitude: number | null,
+  dropoff_longitude: number | null,
+  estimated_price: number | null,
+  vehicle_type_id: string | null,
 }

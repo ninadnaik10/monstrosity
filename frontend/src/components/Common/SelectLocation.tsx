@@ -14,6 +14,8 @@ import {
 import { Place } from "../../client/types";
 import { MapService } from "../../client";
 import { useNavigate } from "@tanstack/react-router";
+import { bookingStateAtom } from "../../states/booking-state";
+import { useRecoilState } from "recoil";
 
 interface LocationSearchProps {
   onFromPlaceClick: (place: Place) => void;
@@ -24,13 +26,17 @@ export default function LocationSearch({
   onFromPlaceClick,
   onToPlaceClick,
 }: LocationSearchProps) {
+  const navigate = useNavigate({ from: "/_layout/pick-location" });
+
+  const handleChooseFleetSubmit = () => {
+    navigate({ to: "/fleet" });
+  };
   const [fromTerm, setFromTerm] = useState("");
   const [toTerm, setToTerm] = useState("");
   const [fromPlaces, setFromPlaces] = useState<Place[]>([]);
   const [toPlaces, setToPlaces] = useState<Place[]>([]);
   const [chooseFleetButtonDisabled, setChooseFleetButtonDisabled] =
     useState(true);
-  const navigate = useNavigate({ from: "/_layout/pick-location" });
 
   const mapService = new MapService();
 
@@ -114,7 +120,7 @@ export default function LocationSearch({
         width="100%"
         disabled={chooseFleetButtonDisabled}
         // @ts-ignore
-        onClick={() => navigate({ to: "/fleet" })}
+        onClick={() => handleChooseFleetSubmit()}
       >
         Choose Fleet
       </Button>

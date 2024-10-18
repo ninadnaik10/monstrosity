@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app import crud
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.deps import CurrentUser, SessionDep,  get_current_active_superuser, CurrentDriver
 from app.core import security
 from app.core.config import settings
 from app.core.security import get_password_hash
@@ -28,33 +28,83 @@ router = APIRouter()
 
 @router.get("/", response_model=BookingsPublic)
 def read_items(
-    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    session: SessionDep, skip: int = 0, limit: int = 100
 ) -> Any:
     """
-    Retrieve items.
+    Retrieve bookings.
     """
-    
-    if current_user.is_superuser:
-        count_statement = select(func.count()).select_from(Booking)
-        count = session.exec(count_statement).one()
-        statement = select(Booking).offset(skip).limit(limit)
-        bookings = session.exec(statement).all()
-    else:
-        count_statement = (
-            select(func.count())
-            .select_from(Booking)
-            .where(Booking.owner_id == current_user.user_id)
-        )
-        count = session.exec(count_statement).one()
-        statement = (
-            select(Booking)
-            .where(Booking.owner_id == current_user.user_id)
-            .offset(skip)
-            .limit(limit)
-        )
-        bookings = session.exec(statement).all()
 
-    return BookingsPublic(data=bookings, count=count)
+    
+    count_statement = (
+        select(func.count())
+        .select_from(Booking)
+    )
+    count = session.exec(count_statement).one()
+    statement = (
+        select(Booking)
+        .offset(skip)
+        .limit(limit)
+    )
+    bookings = session.exec(statement).all()
+
+    bookings_public = []
+   
+    
+    for booking in bookings:
+        pickup = session.get(Location, booking[0].pickup_location_id)
+        dropoff = session.get(Location, booking[0].dropoff_location_id)
+        bookings_public.append(BookingPublic(
+            booking_id=booking[0].booking_id,
+            pickup_address=pickup.address,
+            dropoff_address=dropoff.address,
+            pickup_city=pickup.city,
+            dropoff_city=dropoff.city,
+            estimated_price=booking[0].estimated_price,
+        ))
+    print("this count", count[0])
+    return BookingsPublic(data=bookings_public, count=count[0])
+
+@router.get("/my/", response_model=BookingsPublic)
+def read_items(
+    session: SessionDep, current_driver:CurrentDriver, skip: int = 0, limit: int = 100
+) -> Any:
+    """
+    Retrieve bookings.
+    """
+
+    
+    print(current_driver)
+    count_statement = (
+        select(func.count())
+        .select_from(Booking)
+        .where(Booking.driver_id == current_driver.driver_id)
+    )
+    count = session.exec(count_statement).one()
+    statement = (
+        select(Booking)
+        .where(Booking.driver_id == current_driver.driver_id)
+        .offset(skip)
+        .limit(limit)
+    )
+    bookings = session.exec(statement).all()
+
+    bookings_public = []
+    
+    
+    for booking in bookings:
+        pickup = session.get(Location, booking[0].pickup_location_id)
+        dropoff = session.get(Location, booking[0].dropoff_location_id)
+        bookings_public.append(BookingPublic(
+            booking_id=booking[0].booking_id,
+            pickup_address=pickup.address,
+            dropoff_address=dropoff.address,
+            pickup_city=pickup.city,
+            dropoff_city=dropoff.city,
+            estimated_price=booking[0].estimated_price,
+        ))
+    print("this count", count[0])
+    return BookingsPublic(data=bookings_public, count=count[0])
+
 
 
 @router.get("/{id}", response_model=BookingPublic)
@@ -70,30 +120,7 @@ def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> 
     return booking
 
 
-# @router.post("/", response_model=BookingPublic)
-# def create_item(
-#     *, session: SessionDep, current_user: CurrentUser, booking_in: BookingCreate
-# ) -> Any:
-#     """
-#     Create new booking.
-#     """
-#     booking = BookingCreate.model_validate(booking_in) 
-#                                                 #  update={"owner_id": current_user.user_id})
-                                            
 
-#     owner = session.get(User, current_user.user_id)
-#     print(type(booking))
-#     driver = session.get(Driver, booking.driver_id)
-#     pickup_location = session.get(Location, booking.pickup_location_id)
-#     dropoff_location = session.get(Location, booking.dropoff_location_id)
-#     booking.driver = driver
-#     booking.pickup_location = pickup_location
-#     booking.dropoff_location = dropoff_location
-#     booking.user = owner
-#     session.add(booking)
-#     session.commit()
-#     session.refresh(booking)
-#     return booking
 
 
 @router.post("/", response_model=BookingPublic)
@@ -132,10 +159,12 @@ async def create_booking(
         pickup_location=pickup_location,
         dropoff_location=dropoff_location,
         estimated_price=booking.estimated_price,
+        
         status="created",
         user=owner,
         # driver=driver
     )
+    new_booking.vehicle = session.get(Item, booking.vehicle_id)
 
     session.add(new_booking)
     session.commit()
