@@ -14,8 +14,6 @@ import {
 import { Place } from "../../client/types";
 import { MapService } from "../../client";
 import { useNavigate } from "@tanstack/react-router";
-import { bookingStateAtom } from "../../states/booking-state";
-import { useRecoilState } from "recoil";
 
 interface LocationSearchProps {
   onFromPlaceClick: (place: Place) => void;

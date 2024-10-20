@@ -10,13 +10,12 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { BookingService, LocationService, VehicleService } from "../../client";
 import { BeatLoader } from "react-spinners";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { bookingStateAtom } from "../../states/booking-state";
-import { setTimeout } from "timers/promises";
 
 export const Route = createFileRoute("/_layout/fleet")({
   component: ChooseFleet,
@@ -81,11 +80,7 @@ export default function ChooseFleet() {
 
     navigate({ to: "/" });
   };
-  const {
-    data: vehicles,
-    isLoading,
-    isPlaceholderData,
-  } = useQuery<VehiclePriceEstimates>({
+  const { data: vehicles, isLoading } = useQuery<VehiclePriceEstimates>({
     ...getItemsQueryOptions({
       from: [bookingState.pickup_latitude, bookingState.pickup_longitude],
       to: [bookingState.dropoff_latitude, bookingState.dropoff_longitude],

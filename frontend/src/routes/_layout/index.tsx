@@ -7,7 +7,6 @@ import {
   Image,
   Stack,
   Heading,
-  Divider,
   CardFooter,
   ButtonGroup,
   Button,
@@ -16,7 +15,6 @@ import {
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import useAuth from "../../hooks/useAuth";
-import { RecoilRoot } from "recoil";
 
 export const Route = createFileRoute("/_layout/")({
   component: Dashboard,

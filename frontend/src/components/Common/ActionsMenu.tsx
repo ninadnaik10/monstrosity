@@ -7,22 +7,19 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 
-import type { ItemPublic, UserPublic } from "../../client";
-import EditUser from "../Admin/EditUser";
-import EditItem from "../Items/EditItem";
-import Delete from "./DeleteAlert";
+import type { BookingPublic, UserPublic } from "../../client";
 
 interface ActionsMenuProps {
   type: string;
-  value: ItemPublic | UserPublic;
+  value: UserPublic | BookingPublic;
   disabled?: boolean;
 }
 
-const ActionsMenu = ({ type, value, disabled }: ActionsMenuProps) => {
+const ActionsMenu = ({ disabled }: ActionsMenuProps) => {
   const acceptModal = useDisclosure();
-  const deleteModal = useDisclosure();
+  // const deleteModal = useDisclosure();
 
   return (
     <>
@@ -48,25 +45,25 @@ const ActionsMenu = ({ type, value, disabled }: ActionsMenuProps) => {
             Delete {type}
           </MenuItem> */}
         </MenuList>
-        {type === "User" ? (
+        {/* {type === "User" ? (
           <EditUser
             user={value as UserPublic}
             isOpen={acceptModal.isOpen}
             onClose={acceptModal.onClose}
           />
         ) : (
-          <EditItem
-            item={value as ItemPublic}
-            isOpen={acceptModal.isOpen}
-            onClose={acceptModal.onClose}
-          />
+          // <EditItem
+          //   item={value as BookingPublic}
+          //   isOpen={acceptModal.isOpen}
+          //   onClose={acceptModal.onClose}
+          // />
         )}
         <Delete
           type={type}
-          id={value.id}
+          id={value.user_id}
           isOpen={deleteModal.isOpen}
           onClose={deleteModal.onClose}
-        />
+        /> */}
       </Menu>
     </>
   );

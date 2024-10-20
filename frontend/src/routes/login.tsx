@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -6,7 +6,6 @@ import {
   FormControl,
   FormErrorMessage,
   Icon,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -24,7 +23,6 @@ import {
 } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 
-import Logo from "/assets/images/fastapi-logo.svg";
 import type { Body_login_login_access_token as AccessToken } from "../client";
 import useAuth, { isLoggedIn, isDriver } from "../hooks/useAuth";
 import { emailPattern } from "../utils";
@@ -35,7 +33,8 @@ export const Route = createFileRoute("/login")({
     if (isLoggedIn()) {
       if (isDriver()) {
         throw redirect({
-          to: "/driver-dashboard/",
+          to: "/driver-dashboard",
+          search: { page: 1 },
         });
       } else {
         throw redirect({

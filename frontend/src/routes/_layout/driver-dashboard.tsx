@@ -17,10 +17,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { z } from "zod";
 
-import { BookingService, ItemsService } from "../../client";
+import { BookingService } from "../../client";
 import ActionsMenu from "../../components/Common/ActionsMenu";
-import Navbar from "../../components/Common/Navbar";
-import AddItem from "../../components/Items/AddItem";
 
 const itemsSearchSchema = z.object({
   page: z.number().catch(1),

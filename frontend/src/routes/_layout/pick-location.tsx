@@ -1,13 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
-  Input,
-  Stack,
-} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { Grid, GridItem } from "@chakra-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Place } from "../../client/types";
 import Map from "../../components/Common/Map";

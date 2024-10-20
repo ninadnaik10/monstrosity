@@ -24,16 +24,13 @@ import { z } from "zod";
 
 import {
   BookingService,
+  BookingPublic,
   ItemPublic,
-  ItemsService,
   UserPublic,
 } from "../../client";
-import Navbar from "../../components/Common/Navbar";
-import AddItem from "../../components/Items/AddItem";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiEdit } from "react-icons/fi";
 import EditUser from "../../components/Admin/EditUser";
-import Delete from "../../components/Common/DeleteAlert";
 import EditItem from "../../components/Items/EditItem";
 
 const itemsSearchSchema = z.object({
@@ -177,7 +174,15 @@ function MyBookings() {
   );
 }
 
-const ActionsMenu = ({ type, value, disabled }) => {
+const ActionsMenu = ({
+  type,
+  value,
+  disabled,
+}: {
+  type: string;
+  value: UserPublic | ItemPublic | BookingPublic;
+  disabled: boolean | undefined;
+}) => {
   const changeStatus = useDisclosure();
 
   return (

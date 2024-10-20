@@ -19,6 +19,7 @@ import type {
   ItemsPublic,
   ItemUpdate,
   BookingCreate,
+  BookingsPublic,
 } from "./models"
 import { Place, SearchResponse } from "./types"
 
@@ -577,7 +578,7 @@ export class BookingService {
 
   public static readItems(
     data: TDataReadItems = {},
-  ): CancelablePromise<ItemsPublic> {
+  ): CancelablePromise<BookingsPublic> {
     const { limit = 100, skip = 0 } = data
     return __request(OpenAPI, {
       method: "GET",
@@ -594,7 +595,7 @@ export class BookingService {
 
   public static readMyItems(
     data: TDataReadItems = {},
-  ): CancelablePromise<ItemsPublic> {
+  ): CancelablePromise<BookingsPublic> {
     const { limit = 100, skip = 0 } = data
     return __request(OpenAPI, {
       method: "GET",

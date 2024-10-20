@@ -108,3 +108,16 @@ export type BookingCreate = {
   estimated_price: number | null,
   vehicle_type_id: string | null,
 }
+
+export type BookingsPublic = {
+  data: Array<BookingPublic>
+  count: number
+}
+
+
+export type BookingPublic = {
+  booking_id: string,
+  pickup_address: string,
+  dropoff_address: string,
+  estimated_price: number
+}
